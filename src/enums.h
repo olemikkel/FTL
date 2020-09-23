@@ -140,6 +140,7 @@ enum debug_flags {
 enum events {
 	RELOAD_GRAVITY,
 	RELOAD_PRIVACY_LEVEL,
+	RESOLVE_NEW_HOSTNAMES,
 	RERESOLVE_HOSTNAMES,
 	EVENTS_MAX
 } __attribute__ ((packed));

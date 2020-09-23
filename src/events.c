@@ -92,6 +92,8 @@ static const char *eventtext(const enum events event)
 			return "RELOAD_PRIVACY_LEVEL";
 		case RERESOLVE_HOSTNAMES:
 			return "RERESOLVE_HOSTNAMES";
+		case RESOLVE_NEW_HOSTNAMES:
+			return "RESOLVE_NEW_HOSTNAMES";
 		case EVENTS_MAX: // fall through
 		default:
 			return "UNKNOWN";

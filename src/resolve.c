@@ -385,6 +385,12 @@ void resolveClients(const bool onlynew)
 		if(onlynew && !newflag)
 		{
 			skipped++;
+			if(config.debug & DEBUG_RESOLVER)
+			{
+				lock_shm();
+				logg("Client %s -> \"%s\" already known", getstr(ippos), getstr(oldnamepos));
+				unlock_shm();
+			}
 			continue;
 		}
 
@@ -408,6 +414,10 @@ void resolveClients(const bool onlynew)
 		client->namepos = newnamepos;
 		// Mark entry as not new
 		client->new = false;
+
+		if(config.debug & DEBUG_RESOLVER)
+			logg("Client %s -> \"%s\" is new", getstr(ippos), getstr(newnamepos));
+
 		unlock_shm();
 	}
 
@@ -463,6 +473,12 @@ void resolveForwardDestinations(const bool onlynew)
 		if(onlynew && !newflag)
 		{
 			skipped++;
+			if(config.debug & DEBUG_RESOLVER)
+			{
+				lock_shm();
+				logg("Upstream %s -> \"%s\" already known", getstr(ippos), getstr(oldnamepos));
+				unlock_shm();
+			}
 			continue;
 		}
 
@@ -486,6 +502,10 @@ void resolveForwardDestinations(const bool onlynew)
 		upstream->namepos = newnamepos;
 		// Mark entry as not new
 		upstream->new = false;
+
+		if(config.debug & DEBUG_RESOLVER)
+			logg("Upstream %s -> \"%s\" is new", getstr(ippos), getstr(newnamepos));
+
 		unlock_shm();
 	}
 
@@ -507,7 +527,7 @@ void *DNSclient_thread(void *val)
 	while(!killed)
 	{
 		// Run every minute to resolve only new clients and upstream servers
-		if(resolver_ready && (time(NULL) % RESOLVE_INTERVAL == 0))
+		if(resolver_ready && get_and_clear_event(RESOLVE_NEW_HOSTNAMES))
 		{
 			// Try to resolve new client host names (onlynew=true)
 			resolveClients(true);
