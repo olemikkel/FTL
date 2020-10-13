@@ -134,6 +134,15 @@ elif [[ "${CIRCLE_JOB}" == "armv7hf" ]]; then
   check_CPU_arch "v7"
   check_FP_arch "VFPv3-D16"
 
+elif [[ "${CIRCLE_JOB}" == "armv8a" ]]; then
+
+  check_machine "ELF32" "ARM"
+  check_libs "[librt.so.1] [libgcc_s.so.1] [libpthread.so.0] [libc.so.6] [ld-linux-armhf.so.3]"
+  check_file "ELF 32-bit LSB shared object, ARM, EABI5 version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-armhf.so.3, for GNU/Linux 3.2.0, with debug_info, not stripped"
+
+  check_CPU_arch "v8"
+  check_FP_arch "VFPv3-D16"
+
 else
 
   echo "Invalid job ${CIRCLE_JOB}"
