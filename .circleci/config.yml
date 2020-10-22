@@ -13,7 +13,7 @@ version: 2
         name: "Binary checks"
         command: bash test/arch_test.sh
     - run:
-        name: "Upload"
+        name: "Upload binary to ftl.pi-hole.net"
         command: |
           [ -z "${CIRCLE_PR_USERNAME}" ] || exit 0
           DIR="${CIRCLE_TAG:-${CIRCLE_BRANCH}}"
@@ -23,10 +23,21 @@ version: 2
           ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
           sftp -b - $SSH_USER@$SSH_HOST <<< "-mkdir ${DIR}
           put ${BIN_NAME}* ${DIR}"
-          mv "${BIN_NAME}" pihole-FTL
+    - run:
+        name: "Verify uploaded binary"
+        command: |
+          [ -z "${CIRCLE_PR_USERNAME}" ] || exit 0
+          DIR="${CIRCLE_TAG:-${CIRCLE_BRANCH}}"
+          mkdir download
+          cd download
+          wget "https://ftl.pi-hole.net/${DIR}/${BIN_NAME}"
+          wget "https://ftl.pi-hole.net/${DIR}/${BIN_NAME}.sha1"
+          sha1sum --check "${BIN_NAME}.sha1"
+          cd ..
     - run:
         name: "Test"
         command: |
+          mv "${BIN_NAME}" pihole-FTL
           test/run.sh
 
 .docker_template: &docker_template
